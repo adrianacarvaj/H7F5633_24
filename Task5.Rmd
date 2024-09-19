@@ -1,0 +1,43 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+```{r}
+#Task5.1 Function to calculate ratio mean/median of a vector x
+mean_median_ratio <- function(x) {
+  # Calculate mean of the vector, removing NA values
+  mean_val <- mean(x, na.rm = TRUE)
+  
+  # Calculate median of the vector, removing NA values
+  median_val <- median(x, na.rm = TRUE)
+  
+  # Calculate the ratio of mean to median
+  ratio <- mean_val / median_val
+  
+  return(ratio)
+}
+#to call the function use mean_median_ratio(any_vector)
+#
+#Task5.2
+mean_ignoring_extremes <- function(x) {
+  # Remove the lowest and highest values
+  x_trimmed <- x[x != min(x) & x != max(x)]
+  
+  # Calculate the mean of the remaining values, removing NA
+  mean_val <- mean(x_trimmed, na.rm = TRUE)
+  
+  return(mean_val)
+}
+#to call the function use mean_ignoring_extremes(any_vector)
+#
+#Task5.3
+#Pipes (%>%) improve code readability by chaining operations but should be avoided for functions that use the current environment or lazy evaluation. Use pipes between linear, simple steps, no more than 10. Avoid for multiple inputs/outputs or graphs with complex dependency structure.
+#
+#Task5.4
+#The apply family (apply, lapply, sapply, tapply.) allows iteration over lists, matrices, or data frames. It is preferred to loops. They simplify code applying functions across elements, rows, or columns. Useful to work with large data sets.  
+#
+
+```
+
+
+
