@@ -1,0 +1,121 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+#Task4.2
+help(CO2)
+#put CO2 in a variable called dataset1
+dataset1 <- data(CO2)
+#convert to dataframe
+dataset1 <- as.data.frame(CO2)
+#check data type
+typeof(dataset1)
+#Task4.3
+#calculate mean by Type
+bytype_mean<- aggregate(x= dataset1$uptake, by = list(dataset1$Type), FUN = mean)
+print(bytype_mean)
+#calculate median by Type
+bytype_median<- aggregate(x= dataset1$uptake, by = list(dataset1$Type), FUN = median)
+print(bytype_median)
+#Task4.4
+#load S4, inspect with vignette and put counts as dataframe
+BiocManager::install("airway")
+library(airway)
+library(methods)
+data("airway")
+airway
+vignette("airway")
+counts <- assay(airway,"counts")
+
+# Create an empty vector to store the counts of expressed genes for each sample
+gene_number <- c()
+
+# Loop through columns 2 to 8 (samples), assuming the first column is gene names
+for (i in 2:ncol(counts)) {
+  
+  # Count how many values in the column are not equal to 0
+  counting <- sum(counts[, i] != 0)
+  
+  # Store the count in the vector
+  gene_number <- c(gene_number, counting)
+}
+
+# Return the vector with counts for each sample
+print(gene_number)
+
+  
+# Check if all values in the sample columns (2 to 8) are zero for each row (gene)
+zero_expression_genes <- sum(rowSums(counts[, 2:8]) == 0)
+  
+                    
+print(zero_expression_genes)
+ 
+```
+Task 4. 
+2. CO2 {datasets}	R Documentation
+Carbon Dioxide Uptake in Grass Plants
+Description
+The CO2 data frame has 84 rows and 5 columns of data from an experiment on the cold tolerance of the grass species Echinochloa crus-galli.
+
+Usage
+CO2
+Format
+An object of class c("nfnGroupedData", "nfGroupedData", "groupedData", "data.frame") containing the following columns:
+
+Plant
+an ordered factor with levels Qn1 < Qn2 < Qn3 < ... < Mc1 giving a unique identifier for each plant.
+
+Type
+a factor with levels Quebec Mississippi giving the origin of the plant
+
+Treatment
+a factor with levels nonchilled chilled 
+
+conc
+a numeric vector of ambient carbon dioxide concentrations (mL/L).
+
+uptake
+a numeric vector of carbon dioxide uptake rates (μmol/m2 sec).
+
+Details
+The CO2 uptake of six plants from Quebec and six plants from Mississippi was measured at several levels of ambient CO2 concentration. Half the plants of each type were chilled overnight before the experiment was conducted.
+
+This dataset was originally part of package nlme, and that has methods (including for [, as.data.frame, plot and print) for its grouped-data classes.
+
+Source
+Potvin, C., Lechowicz, M. J. and Tardif, S. (1990) “The statistical analysis of ecophysiological response curves obtained from experiments involving repeated measures”, Ecology, 71, 1389–1400.
+
+Pinheiro, J. C. and Bates, D. M. (2000) Mixed-effects Models in S and S-PLUS, Springer.
+
+3.  mean:
+      Group.1        x
+1      Quebec 33.54286
+2 Mississippi 20.88333
+
+median:
+      Group.1     x
+1      Quebec 37.15
+2 Mississippi 19.30
+
+4. Number of genes expressed per sample
+[1] 24527 25699 23124 25508 25998 24662 23991
+Number of genes not expressed in any sample
+[1] 30710
+
+[Package datasets version 4.4.1 Index]
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+
+
