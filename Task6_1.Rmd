@@ -1,0 +1,313 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+#Task6.1a
+#load library and read the csv file
+library(readr)
+magic_guys <- read_csv("/Users/adrianacarvajal/Desktop/BADV_h24/magic_guys.csv")
+View(magic_guys)
+#to data frame
+magic_guys_df <- as.data.frame(magic_guys)
+#check
+class(magic_guys_df)
+#change lenght from double to integer
+magic_guys_df$length <- as.integer(magic_guys_df$length)
+#check
+typeof(magic_guys_df$length)
+#load ggplot2
+library(ggplot2)
+#
+# Basic histogram using base R to compare two species
+jedi_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "jedi") 
+sith_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "sith") 
+# Create the first histogram (Jedi)
+hist(jedi_lenghts$length, 
+     col = rgb(0.1, 0.5, 0.7, 0.5),   # semi-transparent blue
+     xlim = range(magic_guys_df$length), ylim = c(1, 8),
+     xlab = "Lenght", 
+     ylab = "Frequency",
+     main = "Comparison of Lenghts for Jedi and Sith",
+     breaks = 20)  # number of bins
+# Overlay the second histogram (Sith)
+hist(sith_lenghts$length, 
+     col = rgb(0.8, 0.3, 0.2, 0.5),   # semi-transparent red
+     add = TRUE,                      # this adds the second histogram on top
+     breaks = 20)                     # make the number of bins is the same
+# Add a legend to distinguish between the two species
+legend("topright", legend = c("Jedi", "Sith"),
+       fill = c(rgb(0.1, 0.5, 0.7, 0.5), rgb(0.8, 0.3, 0.2, 0.5)))
+#
+#ggplot2 geom_hist
+#
+# Basic ggplot2 histogram, identity bars, alpha more transluscent
+ggplot(magic_guys_df, aes(x = length, fill = species)) +
+  geom_histogram(alpha = 0.4, position = "identity", bins = 30) +
+  labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+  theme_minimal()
+# Basic ggplot histogram dodged bars
+ggplot(magic_guys_df, aes(x = length, fill = species)) +
+  geom_histogram(alpha = 0.7, position = "dodge", bins = 30) +
+  labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+  theme_minimal()
+#custum breaks
+ggplot(magic_guys_df, aes(x = length, fill = species)) +
+  geom_histogram() +
+  scale_x_continuous(breaks = seq(50, 300, by = 50)) +
+  labs(title = "Height Distribution with Custom Breaks", x = "Height", y = "Count")
+```
+```{r}
+#Task6.1b
+# basic boxplot comparing lenght by species
+boxplot(magic_guys_df$length ~ magic_guys_df$species, data = magic_guys_df,
+  main = "Height Comparison Between Species",
+  xlab = "Species",
+  ylab = "Height",
+  col = c("lightblue", "lightgreen"))  # Add colors
+
+
+# Create a basic boxplot comparing height by species
+ggplot(magic_guys_df, aes(x = species, y = length, fill = species)) +
+  geom_boxplot() +
+  labs(title = "Height Comparison Between Species",
+       x = "Species",
+       y = "Height") +
+  theme_minimal()
+```
+```{r}
+#Task6.1c
+# Function to save a plot in multiple formats
+save_multiple_formats <- function(plot_function, filename_base) {
+  # Save as PDF
+  pdf(paste0(filename_base, ".pdf"), width = 7, height = 5)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+  
+  # Save as PNG
+  png(paste0(filename_base, ".png"), width = 700, height = 500)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+  
+  # Save as SVG
+  svg(paste0(filename_base, ".svg"), width = 7, height = 5)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+}
+
+# Define your plotting functions
+plot_graph1 <- function() {
+  # Basic ggplot histogram comparing species by height, identity bars, alpha more transluscent
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram(alpha = 0.4, position = "identity", bins = 30) +
+    labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+    theme_minimal()
+}
+
+plot_graph2 <- function() {
+  # Basic ggplot histogram comparing species by height, dodged bars
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram(alpha = 0.7, position = "dodge", bins = 30) +
+    labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+    theme_minimal()
+}
+
+plot_graph3 <- function() {
+  #custum breaks
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram() +
+    scale_x_continuous(breaks = seq(50, 300, by = 50)) +
+    labs(title = "Height Distribution with Custom Breaks", x = "Height", y = "Count")
+}
+
+plot_graph4 <- function() {
+  # Basic histogram using base R to compare two species
+  
+  jedi_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "jedi") 
+  sith_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "sith") 
+  
+  
+  # Create the first histogram (Jedi)
+  hist(jedi_lenghts$length, 
+       col = rgb(0.1, 0.5, 0.7, 0.5),   # semi-transparent blue
+       xlim = range(magic_guys_df$length), ylim = c(1,8),
+       xlab = "Lenght", 
+       ylab = "Frequency",
+       main = "Comparison of Lenghts for Jedi and Sith",
+       breaks = 20)  # number of bins
+  
+  # Overlay the second histogram (Sith)
+  hist(sith_lenghts$length, 
+       col = rgb(0.8, 0.3, 0.2, 0.5),   # semi-transparent red
+       add = TRUE,                      # this adds the second histogram on top
+       breaks = 20)                     # make the number of bins is the same
+  
+  # Add a legend to distinguish between the two species
+  legend("topright", legend = c("Jedi", "Sith"),
+         fill = c(rgb(0.1, 0.5, 0.7, 0.5), rgb(0.8, 0.3, 0.2, 0.5)))
+}
+
+plot_graph5 <- function() {
+  # basic boxplot comparing lenght by species
+  boxplot(magic_guys_df$length ~ magic_guys_df$species, data = magic_guys_df,
+          main = "Height Comparison Between Species",
+          xlab = "Species",
+          ylab = "Height",
+          col = c("lightblue", "lightgreen"))  # Add colors
+}
+
+plot_graph6 <- function() {
+  # Create ggplot boxplot comparing height by species
+  ggplot(magic_guys_df, aes(x = species, y = length, fill = species)) +
+    geom_boxplot() +
+    labs(title = "Height Comparison Between Species",
+         x = "Species",
+         y = "Height") +
+    theme_minimal()
+}
+
+# List of plotting functions and their corresponding filenames
+plots <- list(
+  list(func = plot_graph1, name = "ggplot_identity_bars"),
+  list(func = plot_graph2, name = "ggplot_dodged_bars"),
+  list(func = plot_graph3, name = "ggplot_custumbreaks"),
+  list(func = plot_graph4, name = "basic_histogram"),
+  list(func = plot_graph5, name = "basic_boxplot"),
+  list(func = plot_graph6, name = "ggplot_boxplot")
+)
+
+# Save all graphs
+for (plot in plots) {
+  save_multiple_formats(plot$func, plot$name)
+}
+# Function to save a plot in multiple formats
+save_multiple_formats <- function(plot_function, filename_base) {
+  # Save as PDF
+  pdf(paste0(filename_base, ".pdf"), width = 7, height = 5)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+  
+  # Save as PNG
+  png(paste0(filename_base, ".png"), width = 700, height = 500)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+  
+  # Save as SVG
+  svg(paste0(filename_base, ".svg"), width = 7, height = 5)
+  plot_obj <- plot_function()
+  if ("gg" %in% class(plot_obj)) {
+    print(plot_obj)  # Print ggplot objects
+  }
+  dev.off()
+}
+
+# Define your plotting functions
+plot_graph1 <- function() {
+  # Basic ggplot histogram comparing species by height, identity bars, alpha more transluscent
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram(alpha = 0.4, position = "identity", bins = 30) +
+    labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+    theme_minimal()
+}
+
+plot_graph2 <- function() {
+  # Basic ggplot histogram comparing species by height, dodged bars
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram(alpha = 0.7, position = "dodge", bins = 30) +
+    labs(title = "Distribution of Heights by Species", x = "Height", y = "Count") +
+    theme_minimal()
+}
+
+plot_graph3 <- function() {
+  #custum breaks
+  ggplot(magic_guys_df, aes(x = length, fill = species)) +
+    geom_histogram() +
+    scale_x_continuous(breaks = seq(50, 300, by = 50)) +
+    labs(title = "Height Distribution with Custom Breaks", x = "Height", y = "Count")
+}
+
+plot_graph4 <- function() {
+  # Basic histogram using base R to compare two species
+  
+  jedi_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "jedi") 
+  sith_lenghts <- subset( x = magic_guys_df,  subset = magic_guys$species == "sith") 
+  
+  
+  # Create the first histogram (Jedi)
+  hist(jedi_lenghts$length, 
+       col = rgb(0.1, 0.5, 0.7, 0.5),   # semi-transparent blue
+       xlim = range(magic_guys_df$length), ylim = c(1,8),
+       xlab = "Lenght", 
+       ylab = "Frequency",
+       main = "Comparison of Lenghts for Jedi and Sith",
+       breaks = 20)  # number of bins
+  
+  # Overlay the second histogram (Sith)
+  hist(sith_lenghts$length, 
+       col = rgb(0.8, 0.3, 0.2, 0.5),   # semi-transparent red
+       add = TRUE,                      # this adds the second histogram on top
+       breaks = 20)                     # make the number of bins is the same
+  
+  # Add a legend to distinguish between the two species
+  legend("topright", legend = c("Jedi", "Sith"),
+         fill = c(rgb(0.1, 0.5, 0.7, 0.5), rgb(0.8, 0.3, 0.2, 0.5)))
+}
+
+plot_graph5 <- function() {
+  # basic boxplot comparing lenght by species
+  boxplot(magic_guys_df$length ~ magic_guys_df$species, data = magic_guys_df,
+          main = "Height Comparison Between Species",
+          xlab = "Species",
+          ylab = "Height",
+          col = c("lightblue", "lightgreen"))  # Add colors
+}
+
+plot_graph6 <- function() {
+  # Create ggplot boxplot comparing height by species
+  ggplot(magic_guys_df, aes(x = species, y = length, fill = species)) +
+    geom_boxplot() +
+    labs(title = "Height Comparison Between Species",
+         x = "Species",
+         y = "Height") +
+    theme_minimal()
+}
+
+# List of plotting functions and their corresponding filenames
+plots <- list(
+  list(func = plot_graph1, name = "ggplot_identity_bars"),
+  list(func = plot_graph2, name = "ggplot_dodged_bars"),
+  list(func = plot_graph3, name = "ggplot_custumbreaks"),
+  list(func = plot_graph4, name = "basic_histogram"),
+  list(func = plot_graph5, name = "basic_boxplot"),
+  list(func = plot_graph6, name = "ggplot_boxplot")
+)
+
+# Save all graphs
+for (plot in plots) {
+  save_multiple_formats(plot$func, plot$name)
+}
+
+```
+Task 6.1c
+When to use each format:
+Use PDF for high-quality print-ready graphics.
+Use PNG for web graphics and presentations (better for complex color gradients).
+Use SVG for scalable without loss of quality, editable, and supports interactivity and animation.
+
+
