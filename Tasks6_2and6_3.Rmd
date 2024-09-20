@@ -1,0 +1,62 @@
+---
+title: "R Notebook"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r}
+#Task6.2a
+mat <- as.matrix(microarray_data)
+#a. The matrix has 1000 columns and 554 rows
+#Task6.2b
+# Count missing values per gene
+mat[mat == ""] <- NA
+missing_counts <- colSums(is.na(mat))
+# Create a data frame for plotting
+missing_data <- data.frame(Gene = names(missing_counts), MissingCount = missing_counts)
+#Draw the histogram to visualize distribution of missing observations
+ggplot(missing_data, aes(x = MissingCount)) +
+  geom_histogram(binwidth = 1) +
+  labs(title = "Distribution of Missing Values per Gene",
+       x = "Number of Missing Values per Gene",
+       y = "Frequency (Number of Genes)") +
+  theme_minimal()
+#
+#Task6.2c
+total_observations <- nrow(mat)
+# Calculate percentage of missing values per gene
+missing_data$PercentMissing <- (missing_data$MissingCount / total_observations) * 100
+#to filter which numbers are above a X%, we load tidyverse
+library(tidyverse)
+#and create a function to filter the rows with a percentage over X
+over_x_percent <- function (x) {
+  subsetx <- missing_data %>% 
+  filter(PercentMissing >=x)
+  return(subsetx)
+}
+#to get the subset of genes over an X percent, run over_x_percent(X)
+#
+#Task6.2d
+#ignore the first row(g1 will be V1 son so on, and force values as numeric
+mat_amm <- apply(microarray_data[-1,], 2, as.numeric)
+#Calculate column means removing NA values and create a vector with means
+col_mean <- colMeans(mat_amm, na.rm = TRUE)
+set.seed(1)
+#if value is NA replace for correspoding vector value
+indx <- is.na(mat_amm)
+mat_amm[indx] <- col_mean[col(mat_amm)][indx]
+
+```
+```{r```{r
+
+```{r}
+#Task6.3
+ggplot(CO2, aes(x=conc, y=uptake, color=Type, shape = Treatment)) + 
+  geom_point() +
+  ggtitle("CO2 Uptake curves") +
+  theme_minimal()
+```
+
+
+Task6.3 In graph representation we can see the Photosynthetic CO2 uptake curves (uptake) for plants for the different Type (regions), control vs chilled, and how it changes with ambient carbon dioxide concentrations (conc). It is apparent that C02 uptake rate increases with conc in a non linear pattern (probably a saturation curve). There is an apparent effect by chilling and this effect seems to be more significant in Missisipi plants than in Quebec.  
