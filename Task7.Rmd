@@ -1,0 +1,59 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(tidybiology)
+library(tidyverse)
+data("chromosome")
+data("proteins")
+#Task7.1a
+#summary stats for the required columns using tidyverse
+chromosome$variations %>%summary(.)
+chromosome$protein_codinggenes %>%summary(.)
+chromosome$mi_rna %>%summary(.)
+#Task7.1b
+#barplot, as the data is chromosome lenght it makes more sense to preserve chormosome id instead of visualizing mean, median, max, min as numbers
+ggplot(data=chromosome, aes(x =id, y=length_mm, fill = id)) +
+  geom_bar(stat="identity") +
+  labs(title = "Chromosome length mm", x = "Chromosome", y = "mm") +
+  theme_minimal()
+#Task7.1c
+ggplot(chromosome, aes(x=length_mm, y=protein_codinggenes, color=id)) + 
+  geom_point() +
+  ggtitle("Protein coding genes by chromosome lenght") +
+  theme_minimal()
+ggplot(chromosome, aes(x=length_mm, y=mi_rna, color=id)) + 
+  geom_point() +
+  ggtitle("miRNAs by chromosome lenght") +
+  theme_minimal()
+#Both protein coding genes and miRNAs seem to correlate in general terms with chromosome lenght.
+#
+#Task7.1d
+#
+proteins$length %>%summary(.)
+proteins$mass %>%summary(.)
+#First plot, scatter plot
+ggplot(proteins, aes(x=length, y=mass)) + 
+  geom_point(size=0.5, colour="darkblue") +
+  labs(title = "Protein mass by lenght", x = "Lenght", y = "Mass") +
+  theme_minimal()
+#Data ranges are so wide it becomes a little difficult to visualize most of the points. To improve this we can do several things, I personally prefer option 1:
+#Option 1:Transform both scales to log10 to make data more compact and easier to see, and all data points are kept in the graph.
+ggplot(proteins, aes(x=length, y=mass)) + 
+  geom_point(size=0.5, colour="darkblue") +
+  scale_x_continuous(trans = 'log10') +
+  scale_y_continuous(trans = 'log10') +
+  labs(title = "Protein mass by lenght", x = "Lenght", y = "Mass") +
+  theme_minimal()
+#Option 2: Adjust cartesian coordinates so we visualize most of the data (extracting extreme points from the graph but not the database)
+ggplot(proteins, aes(x=length, y=mass)) + 
+  geom_point(size=0.5, colour="darkblue") +
+  labs(title = "Protein mass by lenght", x = "Lenght", y = "Mass") +
+  coord_cartesian(xlim = c(0, 10000), ylim = c(0, 1000000), expand = TRUE, clip = "on") +
+  theme_minimal()
+#(just to show another option in case transformation is not preferred)
+```
+
+ 
